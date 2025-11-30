@@ -21,14 +21,36 @@ add_action('elementor_pro/forms/new_record', function($record, $handler) {
     $customer_email = $fields['email'];
     $name = isset($fields['name']) ? $fields['name'] : '';
 
+    // Custom labels for normalized field IDs (after stripping "field_" and lowercasing)
+    $custom_labels = [
+        '55cfeda'  => 'Phone',
+        '40b2ecc'  => 'Ski/Snowboard',
+        'a9f4d47'  => 'Ability Level',
+        '31a2469'  => 'No. of Adults',
+        '1b69279'  => 'No. of Children',
+        'de54a5e'  => 'Requested Lesson Date',
+        '0a2289b'  => 'Lesson Type',
+    ];
+
     // Build something similar to [all-fields]
     $all_fields_html = '';
     foreach ($fields as $id => $value) {
-        // Skip internal fields if you want (optional)
+
+        // Skip internal fields if needed (optional)
         if (in_array($id, ['submit', 'acceptance'], true)) {
             continue;
         }
-        $label = ucwords(str_replace(['-', '_'], ' ', $id));
+
+        // Normalize ID: remove "field_" prefix and lowercase
+        $normalized_id = strtolower(str_replace('field_', '', $id));
+
+        if (isset($custom_labels[$normalized_id])) {
+            $label = $custom_labels[$normalized_id];
+        } else {
+            // Default: convert original ID to a readable label
+            $label = ucwords(str_replace(['-', '_'], ' ', $id));
+        }
+
         $all_fields_html .= '<p><strong>' . esc_html($label) . ':</strong> ' . nl2br(esc_html($value)) . '</p>';
     }
 
